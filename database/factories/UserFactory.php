@@ -28,6 +28,7 @@ class UserFactory extends Factory
             'cpf' => fake()->unique()->numerify('###########'),
             'email' => fake()->unique()->safeEmail(),
             'type' => fake()->randomElement(['admin', 'user']),
+            'external_id' => Str::uuid(),
         ];
     }
 }

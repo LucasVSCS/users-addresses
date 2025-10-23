@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('cpf')->unique();
             $table->string('email')->unique();
             $table->enum('type', ['admin', 'user'])->default('user');
+            $table->uuid('external_id')->unique();
             $table->timestamps();
         });
     }
