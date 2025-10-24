@@ -111,8 +111,6 @@ class UserController extends Controller
         $user = User::where('external_id', $id)->firstOrFail();
 
         $validatedData = $request->validated();
-
-        dd($validatedData);
         $userData = collect($validatedData)->only(['name', 'email', 'cpf', 'type'])->all();
 
         DB::beginTransaction();

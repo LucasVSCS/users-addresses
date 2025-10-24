@@ -22,30 +22,30 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $externalId = $this->route('id');
+        $externalId = $this->route('user');
 
         return [
-            'name' => 'sometimes|string|max:255',
-            'email' => [
-                'sometimes',
+            'name'                        => 'string|max:255|required',
+            'email'                       => [
+                'required',
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($externalId, 'external_id')
+                Rule::unique('users', 'email')->ignore($externalId, 'external_id'),
             ],
-            'cpf' => [
-                'sometimes',
+            'cpf'                         => [
+                'required',
                 'string',
                 'numeric',
                 'digits:11',
-                Rule::unique('users', 'cpf')->ignore($externalId, 'external_id')
+                Rule::unique('users', 'cpf')->ignore($externalId, 'external_id'),
             ],
-            'type' => ['sometimes', 'string', Rule::in(['admin', 'user'])],
-            'existing_addresses' => 'sometimes|array',
-            'existing_addresses.*' => 'integer|exists:addresses,id',
-            'new_addresses' => 'sometimes|array',
-            'new_addresses.*' => 'array',
-            'new_addresses.*.street' => 'required|string|max:255',
+            'type'                        => ['required', 'string', Rule::in(['admin', 'user'])],
+            'existing_addresses'          => 'sometimes|array',
+            'existing_addresses.*'        => 'integer|exists:addresses,id',
+            'new_addresses'               => 'sometimes|array',
+            'new_addresses.*'             => 'array',
+            'new_addresses.*.street'      => 'required|string|max:255',
             'new_addresses.*.postal_code' => 'required|string|max:255',
         ];
     }
