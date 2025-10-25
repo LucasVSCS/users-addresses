@@ -9,6 +9,10 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Address;
 use Illuminate\Support\Facades\DB;
+use App\Exceptions\User\UserNotFoundException;
+use App\Exceptions\User\UserStoreException;
+use App\Exceptions\User\UserUpdateException;
+use App\Exceptions\User\UserDeleteException;
 
 class UserController extends Controller
 {
@@ -89,11 +93,7 @@ class UserController extends Controller
                 ->setStatusCode(201);
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return response()->json([
-                'message' => 'Erro ao criar usuário e associar endereços.',
-                'error' => $e->getMessage()
-            ], 500);
+            throw new UserStoreException('Erro ao criar usuário e associar endereços.', 500, $e);
         }
     }
 
@@ -101,14 +101,22 @@ class UserController extends Controller
     {
         $user = User::with('addresses')
             ->where('external_id', $id)
-            ->firstOrFail();
+            ->first();
+
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
 
         return new UserResource($user);
     }
 
     public function update(UpdateUserRequest $request, string $id)
     {
-        $user = User::where('external_id', $id)->firstOrFail();
+        $user = User::where('external_id', $id)->first();
+
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
 
         $validatedData = $request->validated();
         $userData = collect($validatedData)->only(['name', 'email', 'cpf', 'type'])->all();
@@ -154,18 +162,24 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Erro ao atualizar usuário.',
-                'error' => $e->getMessage()
-            ], 500);
+            throw new UserUpdateException('Erro ao atualizar usuário.', 500, $e);
         }
     }
 
 
     public function destroy(string $id)
     {
-        $user = User::where('external_id', $id)->firstOrFail();
-        $user->delete();
+        $user = User::where('external_id', $id)->first();
+
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+
+        try {
+            $user->delete();
+        } catch (\Exception $e) {
+            throw new UserDeleteException('Erro ao deletar usuário.', 500, $e);
+        }
 
         return response()->noContent();
     }
