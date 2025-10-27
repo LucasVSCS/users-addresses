@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('cpf')->unique();
+            $table->string('cpf')->unique()->length(11);
             $table->string('email')->unique();
             $table->enum('type', ['admin', 'user'])->default('user');
             $table->uuid('external_id')->unique();

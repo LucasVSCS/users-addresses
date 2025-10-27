@@ -33,7 +33,7 @@ class StoreUserRequest extends FormRequest
             'new_addresses' => 'sometimes|array',
             'new_addresses.*' => 'array',
             'new_addresses.*.street' => 'required|string|max:255',
-            'new_addresses.*.postal_code' => 'required|string|max:255',
+            'new_addresses.*.postal_code' => 'required|string|digits:8',
         ];
     }
 }
